@@ -1,0 +1,16 @@
+@import '@fontsource/grandstander';
+* {
+	box-sizing: border-box;
+	position: relative;
+}
+:root {
+	--size: 4;
+}
+html,
+body {
+	height: 100%;
+	margin: 0;
+}
+h1 {
+	font-family: Grandstander;
+}
