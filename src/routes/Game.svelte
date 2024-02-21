@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Grid from './Grid.svelte';
 	import Found from './Found.svelte';
-	import { levels, type Level } from './labels';
+	import { type Level } from './labels';
 	import { shuffle } from './utils';
 	import Countdown from './Countdown.svelte';
 	import { createEventDispatcher, onMount } from 'svelte';
 
-	const dispacth = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 	let remaining: number;
 	let duration: number;
 	let playing: boolean;
@@ -21,11 +21,12 @@
 		remaining = duration = level.duration;
 
 		resume();
-		dispacth('play');
+		dispatch('play');
 	}
-	function resume() {
+	export function resume() {
 		playing = true;
 		countdown();
+		dispatch('play');
 	}
 	function create_grid(level: Level) {
 		const copy = level.emojis.slice();
@@ -49,7 +50,7 @@
 			requestAnimationFrame(loop);
 			remaining = remaining_at_start - (Date.now() - start);
 			if (remaining <= 0) {
-				dispacth('lost');
+				dispatch('lost');
 				playing = false;
 			}
 		}
@@ -66,7 +67,7 @@
 				{duration}
 				on:click={() => {
 					playing = false;
-					dispacth('pause');
+					dispatch('pause');
 				}}
 			/>
 		{/if}
@@ -77,7 +78,11 @@
 			on:found={(e) => {
 				found = [...found, e.detail.emoji];
 				if (found.length === (size * size) / 2) {
-					dispacth('win');
+					playing = false;
+					setTimeout(() => {
+						playing = false;
+						dispatch('win');
+					}, 500);
 				}
 			}}
 			{found}

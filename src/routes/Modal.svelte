@@ -1,7 +1,10 @@
-<script></script>
+<script lang="ts">
+	import { fade, scale } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
+</script>
 
-<div class="modal-background">
-	<div>
+<div class="modal-background" transition:fade={{ duration: 200 }}>
+	<div class="modal" transition:scale={{ start: 0.9, duration: 400, easing: cubicOut }}>
 		<slot />
 	</div>
 </div>
@@ -14,6 +17,9 @@
 		z-index: 999;
 		width: 100vw;
 		height: 100vh;
-		backdrop-filter: blur(10px);
+		backdrop-filter: blur(5px);
+		display: grid;
+		place-items: center;
+		transition: all 0.2s;
 	}
 </style>
