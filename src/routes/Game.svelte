@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Grid from './Grid.svelte';
 	import Found from './Found.svelte';
-	import { type Level } from './labels';
+	import { levels, type Level } from './labels';
 	import { shuffle } from './utils';
 	import Countdown from './Countdown.svelte';
 	import { createEventDispatcher, onMount } from 'svelte';
@@ -11,8 +11,8 @@
 	let duration: number;
 	let playing: boolean;
 
-	let size: number;
-	let grid: string[] = [];
+	let size: number = 4;
+	let grid: string[] = create_grid(levels[0]);
 	let found: string[] = [];
 
 	export function start(level: Level) {

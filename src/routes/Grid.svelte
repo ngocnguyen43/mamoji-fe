@@ -7,7 +7,7 @@
 	let a = -1;
 	let b = -1;
 
-	let clear_timeout: number;
+	let clear_timeout: NodeJS.Timeout;
 
 	const dispatch = createEventDispatcher();
 </script>

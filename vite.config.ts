@@ -11,10 +11,6 @@ export default defineConfig({
 						return Buffer.from(id.toString().split('node_modules/')[1].split('/')[0].toString()).toString('base64');
 					}
 				},
-				globals: {
-					react: 'React',
-					'react-dom': 'ReactDOM',
-				},
 			},
 		}
 	}
