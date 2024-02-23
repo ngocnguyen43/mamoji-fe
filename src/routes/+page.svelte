@@ -3,11 +3,14 @@
 	import Game from './Game.svelte';
 	import '../style.css';
 	import Modal from './Modal.svelte';
-	import { levels } from './labels';
+	import { levels, type Level } from './labels';
 	import Information from './Information.svelte';
-	import { information, reset } from './store';
+	import { information, resetInformation } from './store';
+	import { createEventDispatcher } from 'svelte';
 	let state: 'waiting' | 'won' | 'paused' | 'lost' | 'playing' = 'waiting';
 	let game: Game;
+	let currentLevel: Level;
+	const dispatch = createEventDispatcher();
 </script>
 
 <Game
@@ -52,7 +55,7 @@
 						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 						on:click={() => {
 							state = 'waiting';
-							reset();
+							resetInformation();
 						}}>Quit</button
 					>
 				</div>
@@ -60,13 +63,35 @@
 				<div class="buttons">
 					<button
 						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
-						on:click={() => game.resume()}>Next Level</button
+						on:click={() => {
+							game.start(currentLevel, $information.difficult + 1);
+							$information.difficult += 1;
+							dispatch('next-level');
+						}}>Next Level</button
 					>
 					<button
 						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 						on:click={() => {
 							state = 'waiting';
-							reset();
+							resetInformation();
+						}}>Quit</button
+					>
+				</div>
+			{:else if state === 'lost'}
+				<div class="buttons">
+					<button
+						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
+						on:click={() => {
+							game.start(currentLevel, 1);
+							$information.difficult = 1;
+							dispatch('next-level');
+						}}>Play again</button
+					>
+					<button
+						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
+						on:click={() => {
+							state = 'waiting';
+							resetInformation();
 						}}>Quit</button
 					>
 				</div>
@@ -77,6 +102,7 @@
 							style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 							on:click={() => {
 								if ($information.name.length) {
+									currentLevel = level;
 									game.start(level);
 								}
 							}}>{level.label}</button

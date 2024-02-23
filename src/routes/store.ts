@@ -1,14 +1,18 @@
 import { writable } from 'svelte/store';
 
-type InitialState = {
+type InformationInitialState = {
     name: string,
-    avatar: string
+    avatar: string,
+    difficult: number,
+    score: number,
 }
-const initiaState: InitialState = {
+const informationInitiaState: InformationInitialState = {
     name: "",
-    avatar: ""
+    avatar: "",
+    difficult: 0,
+    score: 0
 }
-export const information = writable<InitialState>(structuredClone(initiaState));
-export const reset = () => {
-    information.set(structuredClone(initiaState))
-} 
+export const information = writable<InformationInitialState>(structuredClone(informationInitiaState));
+export const resetInformation = () => {
+    information.set(structuredClone(informationInitiaState))
+}

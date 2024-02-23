@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onDestroy } from 'svelte';
 	import Square from './Square.svelte';
 	export let grid: string[];
 	export let found: string[];
@@ -18,8 +18,12 @@
 			{emoji}
 			on:click={() => {
 				clearTimeout(clear_timeout);
+
 				if (a === -1 && b === -1) {
 					a = i;
+					clear_timeout = setTimeout(() => {
+						a = -1;
+					}, 1000);
 				} else if (b === -1) {
 					b = i;
 					if (grid[a] === grid[b]) {
@@ -34,6 +38,9 @@
 				} else {
 					a = i;
 					b = -1;
+					clear_timeout = setTimeout(() => {
+						a = -1;
+					}, 1000);
 				}
 			}}
 			selected={a === i || b === i}

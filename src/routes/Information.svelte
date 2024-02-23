@@ -1,11 +1,6 @@
 <script lang="ts">
-	import { v4 as uuidv4 } from 'uuid';
 	import MinidenticonImg from './MinidenticonImg.svelte';
 	import { information } from './store';
-	let random: string;
-	function handleOnClick() {
-		random = uuidv4().toString();
-	}
 </script>
 
 <label class="information">
@@ -33,12 +28,6 @@
 		padding: 0.5em;
 		border-radius: 8px;
 		background-color: rgb(202, 202, 202);
-	}
-	.btn-reload {
-		border: none;
-		outline: none;
-	}
-	.btn-reload:hover {
-		cursor: pointer;
+		filter: drop-shadow(0.2em 0.2em 0.5em rgba(0, 0, 0, 0.2));
 	}
 </style>

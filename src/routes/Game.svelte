@@ -16,10 +16,11 @@
 	let grid: string[] = create_grid(levels[1]);
 	let found: string[] = [];
 
-	export function start(level: Level) {
+	export function start(level: Level, difficult: number = 0) {
 		size = level.size;
-		grid = create_grid(level);
-		remaining = duration = level.duration;
+		grid = structuredClone(create_grid(level));
+		found = [];
+		remaining = duration = level.duration - (difficult * 5) / 100;
 
 		resume();
 		dispatch('play');
