@@ -5,14 +5,15 @@
 	import { shuffle } from './utils';
 	import Countdown from './Countdown.svelte';
 	import { createEventDispatcher, onMount } from 'svelte';
+	import { information } from './store';
 
 	const dispatch = createEventDispatcher();
 	let remaining: number;
 	let duration: number;
 	let playing: boolean;
 
-	let size: number = 4;
-	let grid: string[] = create_grid(levels[0]);
+	let size: number = 6;
+	let grid: string[] = create_grid(levels[1]);
 	let found: string[] = [];
 
 	export function start(level: Level) {
@@ -60,7 +61,14 @@
 </script>
 
 <div class="game" style="--size:{size}">
-	<div class="info">
+	<div class="info" style="position: relative;">
+		<div
+			style="display: flex;align-items: center; justify-content: center; position: absolute; top: -7em;left: 50%;transform: translateX(-50%); gap: 2em;"
+			class:information-box={!playing}
+		>
+			<img src={$information.avatar} alt="" srcset="" class="user-information-avatar" />
+			<h1 style="text-transform: uppercase;">{$information.name}</h1>
+		</div>
 		{#if playing}
 			<Countdown
 				{remaining}
@@ -109,5 +117,14 @@
 	.grid-container {
 		width: 80em;
 		height: 80em;
+	}
+	.user-information-avatar {
+		border-radius: 50%;
+		background-color: rgb(202, 202, 202);
+		width: 50px;
+		height: 50px;
+	}
+	.information-box {
+		visibility: hidden;
 	}
 </style>

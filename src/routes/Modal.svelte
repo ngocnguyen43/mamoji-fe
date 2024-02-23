@@ -8,7 +8,7 @@
 	<div class="modal" transition:scale={{ start: 0.9, duration: 400, easing: cubicOut }}>
 		<slot />
 	</div>
-	<Leaderboard />
+	<!-- <Leaderboard /> -->
 </div>
 
 <style>
