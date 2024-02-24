@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { createEventDispatcher, onDestroy } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
+
 	import Square from './Square.svelte';
+	import { information } from './store';
 	export let grid: string[];
 	export let found: string[];
 
@@ -21,26 +23,37 @@
 
 				if (a === -1 && b === -1) {
 					a = i;
-					clear_timeout = setTimeout(() => {
-						a = -1;
-					}, 1000);
+					clear_timeout = setTimeout(
+						() => {
+							a = b = -1;
+						},
+						1000 - (1000 * $information.difficult) / 100
+					);
 				} else if (b === -1) {
 					b = i;
 					if (grid[a] === grid[b]) {
 						dispatch('found', {
-							emoji
+							emoji,
+							score: 20
 						});
+						$information.score += 20;
 					} else {
-						clear_timeout = setTimeout(() => {
-							a = b = -1;
-						}, 1000);
+						clear_timeout = setTimeout(
+							() => {
+								a = b = -1;
+							},
+							1000 - (1000 * $information.difficult) / 100
+						);
 					}
 				} else {
 					a = i;
 					b = -1;
-					clear_timeout = setTimeout(() => {
-						a = -1;
-					}, 1000);
+					clear_timeout = setTimeout(
+						() => {
+							a = b = -1;
+						},
+						1000 - (1000 * $information.difficult) / 100
+					);
 				}
 			}}
 			selected={a === i || b === i}

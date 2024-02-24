@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { get_twenmoji_url } from './utils';
 	import { send } from './transition';
+	import { get_twenmoji_url } from './utils';
 	export let emoji: string;
 	export let selected: boolean;
 	export let found: boolean;

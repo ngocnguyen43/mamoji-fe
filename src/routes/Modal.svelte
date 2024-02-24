@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { fade, scale } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { fade, scale } from 'svelte/transition';
+
 	import Leaderboard from './Leaderboard.svelte';
 </script>
 
@@ -8,7 +9,7 @@
 	<div class="modal" transition:scale={{ start: 0.9, duration: 400, easing: cubicOut }}>
 		<slot />
 	</div>
-	<!-- <Leaderboard /> -->
+	<Leaderboard />
 </div>
 
 <style>

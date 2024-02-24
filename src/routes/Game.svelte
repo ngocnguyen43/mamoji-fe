@@ -1,11 +1,20 @@
 <script lang="ts">
-	import Grid from './Grid.svelte';
-	import Found from './Found.svelte';
-	import { levels, type Level } from './labels';
-	import { shuffle } from './utils';
+	import { createEventDispatcher, onMount, beforeUpdate } from 'svelte';
+
 	import Countdown from './Countdown.svelte';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import Found from './Found.svelte';
+	import Grid from './Grid.svelte';
+	import { levels, type Level } from './labels';
 	import { information } from './store';
+	import { shuffle } from './utils';
+
+	import { tweened } from 'svelte/motion';
+	import { quintOut } from 'svelte/easing';
+	import { derived } from 'svelte/store';
+
+	let score = tweened(0, { duration: 2000, easing: quintOut });
+
+	let formattedScore = derived(score, ($myNumber) => $myNumber.toFixed());
 
 	const dispatch = createEventDispatcher();
 	let remaining: number;
@@ -16,14 +25,17 @@
 	let grid: string[] = create_grid(levels[1]);
 	let found: string[] = [];
 
+	export function refreshScore() {
+		score.set(0, { duration: 0 });
+	}
+
 	export function start(level: Level, difficult: number = 0) {
 		size = level.size;
-		grid = structuredClone(create_grid(level));
+		grid = create_grid(level);
 		found = [];
-		remaining = duration = level.duration - (difficult * 5) / 100;
+		remaining = duration = level.duration - (level.duration * difficult) / 100;
 
 		resume();
-		dispatch('play');
 	}
 	export function resume() {
 		playing = true;
@@ -59,17 +71,24 @@
 		loop();
 	}
 	onMount(countdown);
+	beforeUpdate(() => {
+		score.set($information.score);
+	});
 </script>
 
 <div class="game" style="--size:{size}">
 	<div class="info" style="position: relative;">
-		<div
-			style="display: flex;align-items: center; justify-content: center; position: absolute; top: -7em;left: 50%;transform: translateX(-50%); gap: 2em;"
-			class:information-box={!playing}
-		>
-			<img src={$information.avatar} alt="" srcset="" class="user-information-avatar" />
-			<h1 style="text-transform: uppercase;">{$information.name}</h1>
-		</div>
+		{#key grid}
+			<div
+				style="display: flex;align-items: center; justify-content: center; position: absolute; top: -7em;left: 50%;transform: translateX(-50%); gap: 2em;"
+				class:information-box={!playing}
+				id="user-box"
+			>
+				<img src={$information.avatar} alt="" srcset="" class="user-information-avatar" />
+				<h1 style="text-transform: uppercase;">{$information.name}</h1>
+				<h1>Score: {$formattedScore}</h1>
+			</div>
+		{/key}
 		{#if playing}
 			<Countdown
 				{remaining}
@@ -82,20 +101,25 @@
 		{/if}
 	</div>
 	<div class="grid-container">
-		<Grid
-			{grid}
-			on:found={(e) => {
-				found = [...found, e.detail.emoji];
-				if (found.length === (size * size) / 2) {
-					playing = false;
-					setTimeout(() => {
+		{#key grid}
+			<Grid
+				{grid}
+				on:found={(e) => {
+					found = [...found, e.detail.emoji];
+					score.set(e.detail.score + $information.score);
+					if (found.length === (size * size) / 2) {
 						playing = false;
-						dispatch('win');
-					}, 500);
-				}
-			}}
-			{found}
-		/>
+						setTimeout(() => {
+							playing = false;
+							dispatch('win', {
+								remaining
+							});
+						}, 500);
+					}
+				}}
+				{found}
+			/>
+		{/key}
 	</div>
 	<div class="info">
 		<Found {found} />

@@ -1,18 +1,35 @@
 <script lang="ts">
 	import { confetti } from '@neoconfetti/svelte';
+
 	import Game from './Game.svelte';
 	import '../style.css';
-	import Modal from './Modal.svelte';
-	import { levels, type Level } from './labels';
 	import Information from './Information.svelte';
+	import { levels, type Level } from './labels';
+	import Modal from './Modal.svelte';
 	import { information, resetInformation } from './store';
-	import { createEventDispatcher } from 'svelte';
+	import { quintOut } from 'svelte/easing';
+	import { tweened } from 'svelte/motion';
+	import { derived } from 'svelte/store';
 	let state: 'waiting' | 'won' | 'paused' | 'lost' | 'playing' = 'waiting';
 	let game: Game;
 	let currentLevel: Level;
-	const dispatch = createEventDispatcher();
+
+	let score = tweened(0, { duration: 2000, easing: quintOut });
+
+	let formattedScore = derived(score, ($myNumber) => $myNumber.toFixed());
 </script>
 
+<svelte:head>
+	<title>Mamoji</title>
+	<meta name="description" content="the emoji matching game" />
+
+	<meta name="twitter:card" content="summary_large_image" />
+	<!-- <meta property="twitter:domain" content="ematchi.vercel.app" />
+	<meta property="twitter:url" content="https://ematchi.vercel.app" /> -->
+	<meta name="twitter:title" content="ematchi" />
+	<meta name="twitter:description" content="the emoji matching game" />
+	<!-- <meta name="twitter:image" content="https://ematchi.vercel.app/og.png" /> -->
+</svelte:head>
 <Game
 	bind:this={game}
 	on:play={() => {
@@ -24,7 +41,9 @@
 	on:lost={() => {
 		state = 'lost';
 	}}
-	on:win={() => {
+	on:win={(e) => {
+		score.set(+(e.detail.remaining / 100).toFixed() + $information.score);
+		$information.score += +(e.detail.remaining / 100).toFixed();
 		state = 'won';
 	}}
 />
@@ -48,29 +67,34 @@
 			{#if state === 'paused'}
 				<div class="buttons">
 					<button
-						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
+						style="font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 						on:click={() => game.resume()}>Resume</button
 					>
 					<button
-						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
+						style="font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 						on:click={() => {
 							state = 'waiting';
 							resetInformation();
+							game.refreshScore();
 						}}>Quit</button
 					>
 				</div>
 			{:else if state === 'won'}
+				<div style="display: flex;align-items: center; justify-content: center; gap: 2em;">
+					<img src={$information.avatar} alt="" srcset="" class="user-information-avatar" />
+					<h1 style="text-transform: uppercase;">{$information.name}</h1>
+				</div>
+				<h1 style="text-align: center;">Score: {$information.score}</h1>
 				<div class="buttons">
 					<button
-						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
+						style="font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 						on:click={() => {
-							game.start(currentLevel, $information.difficult + 1);
-							$information.difficult += 1;
-							dispatch('next-level');
+							game.start(currentLevel, $information.difficult + 10);
+							$information.difficult += 10;
 						}}>Next Level</button
 					>
 					<button
-						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
+						style="font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 						on:click={() => {
 							state = 'waiting';
 							resetInformation();
@@ -80,18 +104,19 @@
 			{:else if state === 'lost'}
 				<div class="buttons">
 					<button
-						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
+						style="font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 						on:click={() => {
 							game.start(currentLevel, 1);
 							$information.difficult = 1;
-							dispatch('next-level');
+							game.refreshScore();
 						}}>Play again</button
 					>
 					<button
-						style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
+						style="font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 						on:click={() => {
 							state = 'waiting';
 							resetInformation();
+							game.refreshScore();
 						}}>Quit</button
 					>
 				</div>
@@ -99,11 +124,12 @@
 				<div class="buttons">
 					{#each levels as level}
 						<button
-							style="padding: 8px;font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
+							style="font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
 							on:click={() => {
 								if ($information.name.length) {
 									currentLevel = level;
 									game.start(level);
+									state = 'playing';
 								}
 							}}>{level.label}</button
 						>
@@ -133,6 +159,7 @@
 		font-size: 4em;
 		margin: 0;
 		height: 1em;
+		text-align: center;
 	}
 	h1 span {
 		color: purple;
@@ -140,6 +167,7 @@
 	p {
 		text-align: center;
 		margin: 1em;
+		font-size: 1.25em;
 		font-family: Grandstander;
 	}
 	.confetti {
@@ -156,5 +184,11 @@
 		font-size: 1.5em;
 		justify-content: center;
 		align-items: center;
+	}
+	.user-information-avatar {
+		border-radius: 50%;
+		background-color: rgb(202, 202, 202);
+		width: 50px;
+		height: 50px;
 	}
 </style>

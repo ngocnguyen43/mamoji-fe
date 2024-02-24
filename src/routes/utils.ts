@@ -1,4 +1,4 @@
-import { minidenticon } from "minidenticons";
+import { minidenticon } from 'minidenticons';
 
 export function shuffle<T>(array: T[]) {
 	let i = array.length;
