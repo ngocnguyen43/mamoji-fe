@@ -23,7 +23,7 @@
 					</td>
 				</tr>
 			{:else if $query.isError}
-				<td>Error: {$query.error.message}</td>
+				<td>Error </td>
 			{:else if $query.isSuccess}
 				{@const list = $query.data}
 				{#if list.length}
