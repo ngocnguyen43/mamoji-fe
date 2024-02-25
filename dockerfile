@@ -22,13 +22,9 @@ WORKDIR /app
 COPY --from=builder /app/package*.json /app
 COPY --from=builder /app/build /app/build
 COPY --from=builder /app/node_modules /app/node_modules
-# COPY --from=builder /app/build /usr/share/nginx/html
 
-# RUN rm /etc/nginx/conf.d/default.conf
-
-# COPY deploy/nginx/nginx.conf /etc/nginx/conf.d
-
-# EXPOSE 5173
 ENV PORT=5173
+
+EXPOSE 5173
 
 CMD ["node",  "./build/index.js" ]
