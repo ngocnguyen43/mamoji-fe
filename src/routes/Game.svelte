@@ -11,6 +11,7 @@
 	import { tweened } from 'svelte/motion';
 	import { quintOut } from 'svelte/easing';
 	import { derived } from 'svelte/store';
+	import { mutatePlayer, queryLeaderBoard } from './api';
 
 	let score = tweened(0, { duration: 2000, easing: quintOut });
 
@@ -28,8 +29,11 @@
 	export function refreshScore() {
 		score.set(0, { duration: 0 });
 	}
+	const mutate = mutatePlayer();
+	const query = queryLeaderBoard();
 
-	export function start(level: Level, difficult: number = 0) {
+	export function start(state: number, difficult: number = 0) {
+		const level = levels[state];
 		size = level.size;
 		grid = create_grid(level);
 		found = [];
@@ -65,6 +69,19 @@
 			remaining = remaining_at_start - (Date.now() - start);
 			if (remaining <= 0) {
 				dispatch('lost');
+				$mutate.mutate(
+					{
+						player: $information.name,
+						score: $information.score,
+						avatar: $information.avatar,
+						id: $information.id
+					},
+					{
+						onSuccess: () => {
+							$query.refetch();
+						}
+					}
+				);
 				playing = false;
 			}
 		}
@@ -114,6 +131,19 @@
 							dispatch('win', {
 								remaining
 							});
+							$mutate.mutate(
+								{
+									player: $information.name,
+									score: $information.score,
+									avatar: $information.avatar,
+									id: $information.id
+								},
+								{
+									onSuccess: () => {
+										$query.refetch();
+									}
+								}
+							);
 						}, 500);
 					}
 				}}

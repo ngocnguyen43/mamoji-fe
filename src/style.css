@@ -21,6 +21,7 @@ button {
 }
 th {
 	text-align: left;
+	min-width: 4em;
 }
 .avatar {
 	border-radius: 50%;

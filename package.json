@@ -37,6 +37,8 @@
 	"dependencies": {
 		"@fontsource/grandstander": "^5.0.18",
 		"@neoconfetti/svelte": "^2.2.1",
+		"@tanstack/svelte-query": "^5.22.2",
+		"axios": "^1.6.7",
 		"minidenticons": "^4.2.0",
 		"uuid": "^9.0.1"
 	}

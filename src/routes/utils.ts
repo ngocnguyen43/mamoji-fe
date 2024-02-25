@@ -58,3 +58,20 @@ export function imgURI(letter: string) {
 	const url = 'data:image/svg+xml;utf8,' + encodeURIComponent(minidenticon(letter))
 	return url
 }
+
+export async function uploadData({ player, score, avatar }: { player: string, score: number, avatar: string }) {
+	await fetch("http://localhost:3001/v2/game", {
+		method: "POST",
+		body:
+			JSON.stringify({
+				player,
+				score,
+				avatar
+
+			})
+	})
+}
+export const delay = (time: number) =>
+	new Promise((resolve) => {
+		setTimeout(() => resolve(1), time);
+	});
