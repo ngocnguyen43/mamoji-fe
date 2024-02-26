@@ -82,9 +82,11 @@
 				{:else if state === 'won'}
 					<div style="display: flex;align-items: center; justify-content: center; gap: 2em;">
 						<img src={$information.avatar} alt="" srcset="" class="user-information-avatar" />
-						<h1 style="text-transform: uppercase;">{$information.name}</h1>
+						<h1 style="text-transform: uppercase;font-size: 1.5em;">{$information.name}</h1>
 					</div>
-					<h1 style="text-align: center;">Score: {$information.score}</h1>
+					<h1 style="text-align: center;font-size: 2em;margin-top: .75em;">
+						Score: {$information.score}
+					</h1>
 					<div class="buttons">
 						<button
 							style="font-weight: 400;font-size: 1em; background-color: purple;color: white;border-radius: 0.75rem;border: none; outline: none; cursor: pointer;"
@@ -186,6 +188,7 @@
 		font-size: 1.5em;
 		justify-content: center;
 		align-items: center;
+		margin-top: 1rem;
 	}
 	.user-information-avatar {
 		border-radius: 50%;

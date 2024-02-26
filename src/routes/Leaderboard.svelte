@@ -57,7 +57,7 @@
 </div>
 
 <style>
-	@media only screen and (max-width: 1700px) {
+	@media only screen and (max-width: 1600px) {
 		.leaderboard {
 			display: none;
 		}
@@ -76,7 +76,7 @@
 		table-layout: fixed;
 		color: #141a39;
 		cursor: default;
-		font-size: 1.5em;
+		font-size: 1.25em;
 		gap: 1em;
 	}
 	.leaderboard-avatar {
